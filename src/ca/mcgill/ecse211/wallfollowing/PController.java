@@ -6,7 +6,12 @@ public class PController implements UltrasonicController {
 
   /* Constants */
   private static final int MOTOR_SPEED = 200;
-  private static final int FILTER_OUT = 20;
+  private static final int FILTER_OUT = 50;
+  
+  //This is the proportion that we want the error to account for
+  private static final double proportionConstant = 2.5;
+  
+  private static final int MAX_CORRECTION = 50;
 
   private final int bandCenter;
   private final int bandWidth;
@@ -48,12 +53,66 @@ public class PController implements UltrasonicController {
     }
 
     // TODO: process a movement based on the us distance passed in (P style)
+    int change;
+    int error = this.distance - bandCenter;
+    
+    if (Math.abs(error) <= bandWidth) {
+		WallFollowingLab.leftMotor.setSpeed(MOTOR_SPEED);
+		WallFollowingLab.rightMotor.setSpeed(MOTOR_SPEED);
+		WallFollowingLab.leftMotor.forward();
+		WallFollowingLab.rightMotor.forward();
+}
+    //If the error is negative, move farther from the wall (right turn)
+    else if (error < 0) {
+		//An even more negative error means that there is a convex corner, requiring a bigger adjustment
+		if (error < -2) {
+			WallFollowingLab.leftMotor.setSpeed(MOTOR_SPEED);
+    			WallFollowingLab.rightMotor.setSpeed(MOTOR_SPEED);
+    			WallFollowingLab.leftMotor.forward();
+    			WallFollowingLab.rightMotor.backward();
+		}
+		else {
+			change = calcGain(error);
+			WallFollowingLab.leftMotor.setSpeed(MOTOR_SPEED + change);
+    			WallFollowingLab.rightMotor.setSpeed(MOTOR_SPEED - change);
+    			WallFollowingLab.leftMotor.forward();
+    			WallFollowingLab.rightMotor.forward();
+		}
+}
+
+    //A positive error means we need to move closer to the wal
+    else if (error > 0) {
+    		change = calcGain(error);
+    		WallFollowingLab.leftMotor.setSpeed(MOTOR_SPEED - change);
+    		WallFollowingLab.rightMotor.setSpeed(MOTOR_SPEED + change);
+    		WallFollowingLab.leftMotor.forward();
+    		WallFollowingLab.rightMotor.forward();
+    }
   }
 
 
   @Override
   public int readUSDistance() {
     return this.distance;
+  }
+  
+  public int calcGain(int error) {
+	  int change;
+	  
+	  if (error < 0) {
+		  error = Math.abs(error);
+	  }
+	  
+	  //The change is based on the error and the proportion constant
+	  change = (int)(proportionConstant*(double)(error));
+	  
+	  //This is so that the speed correction will never exceed the original speed of the motors, so that 
+	  //turns are not too drastic
+	  if  (change >= MOTOR_SPEED) {
+		  change = MAX_CORRECTION;
+	  }
+	  
+	  return change;
   }
 
 }
