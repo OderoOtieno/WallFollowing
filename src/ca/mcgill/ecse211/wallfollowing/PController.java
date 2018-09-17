@@ -6,10 +6,10 @@ public class PController implements UltrasonicController {
 
   /* Constants */
   private static final int MOTOR_SPEED = 200;
-  private static final int FILTER_OUT = 50;
+  private static final int FILTER_OUT = 60;
   
   //This is the proportion that we want the error to account for
-  private static final double proportionConstant = 2.5;
+  private static final double proportionConstant = 1.6;
   
   private static final int MAX_CORRECTION = 50;
 
@@ -23,10 +23,10 @@ public class PController implements UltrasonicController {
     this.bandWidth = bandwidth;
     this.filterControl = 0;
 
-    WallFollowingLab.leftMotor.setSpeed(MOTOR_SPEED); // Initalize motor rolling forward
-    WallFollowingLab.rightMotor.setSpeed(MOTOR_SPEED);
-    WallFollowingLab.leftMotor.forward();
-    WallFollowingLab.rightMotor.forward();
+//    WallFollowingLab.leftMotor.setSpeed(MOTOR_SPEED); // Initalize motor rolling forward
+//    WallFollowingLab.rightMotor.setSpeed(MOTOR_SPEED);
+//    WallFollowingLab.leftMotor.forward();
+//    WallFollowingLab.rightMotor.forward();
   }
 
   @Override
@@ -65,7 +65,7 @@ public class PController implements UltrasonicController {
     //If the error is negative, move farther from the wall (right turn)
     else if (error < 0) {
 		//An even more negative error means that there is a convex corner, requiring a bigger adjustment
-		if (error < -2) {
+		if (error < - this.bandWidth) {
 			WallFollowingLab.leftMotor.setSpeed(MOTOR_SPEED);
     			WallFollowingLab.rightMotor.setSpeed(MOTOR_SPEED);
     			WallFollowingLab.leftMotor.forward();
@@ -99,16 +99,14 @@ public class PController implements UltrasonicController {
   public int calcGain(int error) {
 	  int change;
 	  
-	  if (error < 0) {
-		  error = Math.abs(error);
-	  }
+	  error = Math.abs(error);
 	  
 	  //The change is based on the error and the proportion constant
 	  change = (int)(proportionConstant*(double)(error));
 	  
 	  //This is so that the speed correction will never exceed the original speed of the motors, so that 
 	  //turns are not too drastic
-	  if  (change >= MOTOR_SPEED) {
+	  if  (change >= MOTOR_SPEED || change >= MAX_CORRECTION) {
 		  change = MAX_CORRECTION;
 	  }
 	  
