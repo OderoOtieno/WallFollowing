@@ -9,7 +9,7 @@ public class PController implements UltrasonicController {
   private static final int FILTER_OUT = 60;
   
   //This is the proportion that we want the error to account for
-  private static final double proportionConstant = 1.6;
+  private static final double proportionConstant = 1.8;
   
   private static final int MAX_CORRECTION = 50;
 
@@ -23,6 +23,7 @@ public class PController implements UltrasonicController {
     this.bandWidth = bandwidth;
     this.filterControl = 0;
 
+//This section of code was removed because it caused the motors to start running before the sensor was activated, leading to error
 //    WallFollowingLab.leftMotor.setSpeed(MOTOR_SPEED); // Initalize motor rolling forward
 //    WallFollowingLab.rightMotor.setSpeed(MOTOR_SPEED);
 //    WallFollowingLab.leftMotor.forward();

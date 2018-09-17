@@ -19,6 +19,8 @@ public class BangBangController implements UltrasonicController {
     this.motorLow = motorLow;
     this.motorHigh = motorHigh;
     this.filterControl = 0;
+ 
+//This section of code was removed because it caused the motors to start running before the sensor was activated, leading to error
 //    WallFollowingLab.leftMotor.setSpeed(motorHigh); // Start robot moving forward
 //    WallFollowingLab.rightMotor.setSpeed(motorHigh);
 //    WallFollowingLab.leftMotor.forward();
