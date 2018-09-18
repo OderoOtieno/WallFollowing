@@ -6,17 +6,20 @@ public class PController implements UltrasonicController {
 
   /* Constants */
   private static final int MOTOR_SPEED = 200;
-  private static final int FILTER_OUT = 60;
+  private static final int FILTER_OUT = 40;
   
   //This is the proportion that we want the error to account for
-  private static final double proportionConstant = 1.8;
+  private static final double proportionConstant = 20;
   
-  private static final int MAX_CORRECTION = 50;
+  private static final int MAX_CORRECTION = 30;
 
   private final int bandCenter;
   private final int bandWidth;
   private int distance;
   private int filterControl;
+  
+  private int leftMotorSpeed;
+  private int rightMotorSpeed;
 
   public PController(int bandCenter, int bandwidth) {
     this.bandCenter = bandCenter;
@@ -60,15 +63,22 @@ public class PController implements UltrasonicController {
     if (Math.abs(error) <= bandWidth) {
 		WallFollowingLab.leftMotor.setSpeed(MOTOR_SPEED);
 		WallFollowingLab.rightMotor.setSpeed(MOTOR_SPEED);
+		this.leftMotorSpeed = MOTOR_SPEED;
+		this.rightMotorSpeed = MOTOR_SPEED;
+
 		WallFollowingLab.leftMotor.forward();
 		WallFollowingLab.rightMotor.forward();
 }
     //If the error is negative, move farther from the wall (right turn)
     else if (error < 0) {
 		//An even more negative error means that there is a convex corner, requiring a bigger adjustment
-		if (error < - this.bandWidth) {
+		if (error < -4) {
 			WallFollowingLab.leftMotor.setSpeed(MOTOR_SPEED);
     			WallFollowingLab.rightMotor.setSpeed(MOTOR_SPEED);
+    			this.leftMotorSpeed = MOTOR_SPEED;
+    			this.rightMotorSpeed = MOTOR_SPEED;
+
+    			
     			WallFollowingLab.leftMotor.forward();
     			WallFollowingLab.rightMotor.backward();
 		}
@@ -76,6 +86,9 @@ public class PController implements UltrasonicController {
 			change = calcGain(error);
 			WallFollowingLab.leftMotor.setSpeed(MOTOR_SPEED + change);
     			WallFollowingLab.rightMotor.setSpeed(MOTOR_SPEED - change);
+    			this.leftMotorSpeed = MOTOR_SPEED + change;
+    			this.rightMotorSpeed = MOTOR_SPEED - change;
+    			
     			WallFollowingLab.leftMotor.forward();
     			WallFollowingLab.rightMotor.forward();
 		}
@@ -86,12 +99,19 @@ public class PController implements UltrasonicController {
     		change = calcGain(error);
     		WallFollowingLab.leftMotor.setSpeed(MOTOR_SPEED - change);
     		WallFollowingLab.rightMotor.setSpeed(MOTOR_SPEED + change);
+		this.leftMotorSpeed = MOTOR_SPEED - change;
+		this.rightMotorSpeed = MOTOR_SPEED + change;
+    		
     		WallFollowingLab.leftMotor.forward();
     		WallFollowingLab.rightMotor.forward();
     }
   }
 
-
+  @Override
+  public String readUSSpeed() {
+	  return "Left motor: " + this.leftMotorSpeed + ", right motor:" + this.rightMotorSpeed;
+  }
+  
   @Override
   public int readUSDistance() {
     return this.distance;

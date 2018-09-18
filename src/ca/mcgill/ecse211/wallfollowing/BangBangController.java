@@ -8,9 +8,11 @@ public class BangBangController implements UltrasonicController {
   private final int bandwidth;
   private final int motorLow;
   private final int motorHigh;
+  private int leftMotorSpeed;
+  private int rightMotorSpeed;
   private int distance;
   private int filterControl;
-  private static final int FILTER_OUT = 20;
+  private static final int FILTER_OUT = 60;
 
   public BangBangController(int bandCenter, int bandwidth, int motorLow, int motorHigh) {
     // Default Constructor
@@ -18,6 +20,8 @@ public class BangBangController implements UltrasonicController {
     this.bandwidth = bandwidth;
     this.motorLow = motorLow;
     this.motorHigh = motorHigh;
+    this.leftMotorSpeed = 0;
+    this.leftMotorSpeed = 0;
     this.filterControl = 0;
  
 //This section of code was removed because it caused the motors to start running before the sensor was activated, leading to error
@@ -57,21 +61,29 @@ public class BangBangController implements UltrasonicController {
     if (Math.abs(error) <= bandwidth) {
     		WallFollowingLab.leftMotor.setSpeed(motorHigh);
     		WallFollowingLab.rightMotor.setSpeed(motorHigh);
+    		this.leftMotorSpeed = motorHigh;
+    		this.rightMotorSpeed = motorHigh;
     		WallFollowingLab.leftMotor.forward();
     		WallFollowingLab.rightMotor.forward();
     }
      //If the error is negative, move farther from the wall (right turn)
     else if (error < 0) {
     		//An even more negative error means that there is a convex corner, requiring a bigger adjustment
-    		if (error < -3) {
+    		if (error < -5) {
     			WallFollowingLab.leftMotor.setSpeed(motorLow);
         		WallFollowingLab.rightMotor.setSpeed(motorLow);
+        		this.leftMotorSpeed = motorLow;
+        		this.rightMotorSpeed = motorLow;
+        		
         		WallFollowingLab.leftMotor.forward();
         		WallFollowingLab.rightMotor.backward();
     		}
     		else {
     			WallFollowingLab.leftMotor.setSpeed(motorHigh);
         		WallFollowingLab.rightMotor.setSpeed(motorLow);
+        		
+        		this.leftMotorSpeed = motorHigh;
+        		this.rightMotorSpeed = motorLow;
         		WallFollowingLab.leftMotor.forward();
         		WallFollowingLab.rightMotor.forward();
     		}
@@ -81,12 +93,19 @@ public class BangBangController implements UltrasonicController {
     else if (error > 0) {
     		WallFollowingLab.leftMotor.setSpeed(motorLow);
 		WallFollowingLab.rightMotor.setSpeed(motorHigh);
+		this.leftMotorSpeed = motorLow;
+		this.rightMotorSpeed = motorHigh;
+		
 		WallFollowingLab.leftMotor.forward();
 		WallFollowingLab.rightMotor.forward();
     }
     
   }
 
+  public String readUSSpeed() {
+	  return "Left motor: " + this.leftMotorSpeed + ", right motor:" + this.rightMotorSpeed;
+  }
+  
   @Override
   public int readUSDistance() {
     return this.distance;
