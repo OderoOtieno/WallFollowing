@@ -108,8 +108,13 @@ public class PController implements UltrasonicController {
   }
 
   @Override
-  public String readUSSpeed() {
-	  return "Left motor: " + this.leftMotorSpeed + ", right motor:" + this.rightMotorSpeed;
+  public String readUSLSpeed() {
+	  return "Left motor: " + this.leftMotorSpeed;
+  }
+  
+  @Override
+  public String readUSRSpeed() {
+	  return "Right motor: " + this.rightMotorSpeed;
   }
   
   @Override

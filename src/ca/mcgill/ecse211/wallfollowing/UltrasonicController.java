@@ -8,5 +8,8 @@ public interface UltrasonicController {
   
   public int readUSDistance();
   
-  public String readUSSpeed();
+  public String readUSLSpeed();
+
+  public String readUSRSpeed();
+
 }

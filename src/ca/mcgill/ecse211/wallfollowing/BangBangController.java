@@ -102,8 +102,14 @@ public class BangBangController implements UltrasonicController {
     
   }
 
-  public String readUSSpeed() {
-	  return "Left motor: " + this.leftMotorSpeed + ", right motor:" + this.rightMotorSpeed;
+  @Override
+  public String readUSLSpeed() {
+	  return "Left motor: " + this.leftMotorSpeed;
+  }
+  
+  @Override
+  public String readUSRSpeed() {
+	  return "Right motor: " + this.rightMotorSpeed;
   }
   
   @Override
