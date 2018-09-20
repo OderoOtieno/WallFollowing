@@ -12,7 +12,7 @@ public class BangBangController implements UltrasonicController {
   private int rightMotorSpeed;
   private int distance;
   private int filterControl;
-  private static final int FILTER_OUT = 4;
+  private static final int FILTER_OUT = 20;
 
   public BangBangController(int bandCenter, int bandwidth, int motorLow, int motorHigh) {
     // Default Constructor
@@ -69,7 +69,7 @@ public class BangBangController implements UltrasonicController {
      //If the error is negative, move farther from the wall (right turn)
     else if (error < 0) {
     		//An even more negative error means that there is a convex corner, requiring a bigger adjustment
-    		if (error < -3) {
+    		if (error < -this.bandwidth) {
     			WallFollowingLab.leftMotor.setSpeed(motorLow);
         		WallFollowingLab.rightMotor.setSpeed(motorLow);
         		this.leftMotorSpeed = motorLow;

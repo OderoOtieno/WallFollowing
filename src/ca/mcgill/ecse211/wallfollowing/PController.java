@@ -6,12 +6,12 @@ public class PController implements UltrasonicController {
 
   /* Constants */
   private static final int MOTOR_SPEED = 200;
-  private static final int FILTER_OUT = 40;
+  private static final int FILTER_OUT = 20;
   
   //This is the proportion that we want the error to account for
   private static final double P_CONSTANT = 20;
   
-  private static final int MAX_CORRECTION = 37;
+  private static final int MAX_CORRECTION = 25;
 
   private final int bandCenter;
   private final int bandWidth;
@@ -72,7 +72,7 @@ public class PController implements UltrasonicController {
     //If the error is negative, move farther from the wall (right turn)
     else if (error < 0) {
 		//An even more negative error means that there is a convex corner, requiring a bigger adjustment
-		if (error < -3) {
+		if (error < -this.bandWidth) {
 			WallFollowingLab.leftMotor.setSpeed(MOTOR_SPEED);
     			WallFollowingLab.rightMotor.setSpeed(MOTOR_SPEED);
     			this.leftMotorSpeed = MOTOR_SPEED;
