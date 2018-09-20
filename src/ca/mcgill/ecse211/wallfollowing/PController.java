@@ -9,9 +9,9 @@ public class PController implements UltrasonicController {
   private static final int FILTER_OUT = 40;
   
   //This is the proportion that we want the error to account for
-  private static final double proportionConstant = 20;
+  private static final double P_CONSTANT = 20;
   
-  private static final int MAX_CORRECTION = 30;
+  private static final int MAX_CORRECTION = 37;
 
   private final int bandCenter;
   private final int bandWidth;
@@ -72,7 +72,7 @@ public class PController implements UltrasonicController {
     //If the error is negative, move farther from the wall (right turn)
     else if (error < 0) {
 		//An even more negative error means that there is a convex corner, requiring a bigger adjustment
-		if (error < -4) {
+		if (error < -3) {
 			WallFollowingLab.leftMotor.setSpeed(MOTOR_SPEED);
     			WallFollowingLab.rightMotor.setSpeed(MOTOR_SPEED);
     			this.leftMotorSpeed = MOTOR_SPEED;
@@ -128,7 +128,7 @@ public class PController implements UltrasonicController {
 	  error = Math.abs(error);
 	  
 	  //The change is based on the error and the proportion constant
-	  change = (int)(proportionConstant*(double)(error));
+	  change = (int)(P_CONSTANT*(double)(error));
 	  
 	  //This is so that the speed correction will never exceed the original speed of the motors, so that 
 	  //turns are not too drastic
